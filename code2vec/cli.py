@@ -90,6 +90,7 @@ def word2vec_train(model_file):
         words_list += words_map.values()
     print('training...', file=sys.stderr)
     w2v = gensim.models.word2vec.Word2Vec(words_list)
+    w2v.train(words_list, total_examples=len(words_list), epochs=30)
     w2v.save(model_file)
 
 @word2vec.command('predict')
@@ -143,6 +144,7 @@ def doc2vec_train(model_file):
         pickle.dump((index_to_name_map, name_to_index_map), f)
     print('training...', file=sys.stderr)
     d2v = gensim.models.doc2vec.Doc2Vec(docs)
+    d2v.train(docs, total_examples=len(docs), epochs=30)
     d2v.save(model_file)
 
 @doc2vec.command('predict')
