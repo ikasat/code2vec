@@ -93,6 +93,15 @@ def word2vec_train(model_file):
     w2v.train(words_list, total_examples=len(words_list), epochs=30)
     w2v.save(model_file)
 
+@word2vec.command('train-dir')
+@click.option('--model-file', '-f', default='word2vec.model')
+@click.argument('dir')
+def word2vec_train_dir(model_file, dir):
+    import gensim
+    sentences = gensim.models.word2vec.PathLineSentences(dir)
+    w2v = gensim.models.word2vec.Word2Vec(sentences)
+    w2v.save(model_file)
+
 @word2vec.command('predict')
 @click.option('--model-file', '-f', default='word2vec.model')
 @click.argument('words', nargs=-1)
@@ -111,6 +120,47 @@ def word2vec_predict(model_file, words):
             positive_words.append(word)
     w2v = gensim.models.word2vec.Word2Vec.load(model_file)
     result = w2v.most_similar(positive=positive_words, negative=negative_words)
+    for word, distance in result:
+        print("{:6.4f} {}".format(distance, word))
+
+@main.group(invoke_without_command=True)
+@click.pass_context
+def fasttext(ctx):
+    if ctx.invoked_subcommand is None:
+        print(ctx.get_help())
+
+@fasttext.command('train')
+@click.option('--model-file', '-f', default='fasttext.model')
+def fasttext_train(model_file):
+    import gensim
+    import sys
+    from .jsons import parse_json_stream
+    words_list = []
+    for words_map in parse_json_stream(sys.stdin):
+        words_list += words_map.values()
+    print('training...', file=sys.stderr)
+    ftxt = gensim.models.FastText(words_list)
+    # ftxt.train(words_list, total_examples=len(words_list), epochs=30)
+    ftxt.save(model_file)
+
+@fasttext.command('predict')
+@click.option('--model-file', '-f', default='fasttext.model')
+@click.argument('words', nargs=-1)
+def fasttext_predict(model_file, words):
+    import gensim
+    import sys
+    from .jsons import parse_json_stream
+    positive_words = []
+    negative_words = []
+    for word in words:
+        if word.startswith('+'):
+            positive_words.append(word[1:])
+        elif word.startswith('-'):
+            negative_words.append(word[1:])
+        else:
+            positive_words.append(word)
+    ftxt = gensim.models.FastText.load(model_file)
+    result = ftxt.most_similar(positive=positive_words, negative=negative_words)
     for word, distance in result:
         print("{:6.4f} {}".format(distance, word))
 
@@ -184,7 +234,7 @@ def lda_train(model_file, dictionary_file, corpus_file, num_topics):
         corpus=corpus, num_topics=num_topics, id2word=dictionary)
     lda.save(model_file)
     for i in range(num_topics):
-        print('{}: {}'.format(i, lda.print_topic(i)))
+        print('{} {}'.format(i, lda.print_topic(i)))
 
 @lda.command('predict')
 @click.option('--model-file', '-f', default='lda.model')
