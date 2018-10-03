@@ -26,7 +26,7 @@ zcat documents.jsons.gz | code2vec word2vec train
 ### Prediction
 
 ```
-$ code2vec word2vec predict-shell
+$ code2vec word2vec predict
 > add - list + map
 0.5713 put
 0.5061 contains
