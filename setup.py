@@ -21,8 +21,8 @@ setup(
     zip_safe=False,
     python_requires='>=3.4',
     install_requires=[
-        'click',
-        'gensim',
+        'click==7.0',
+        'gensim==3.6.0',
     ],
     extras_require={
         'dev': [
