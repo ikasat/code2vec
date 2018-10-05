@@ -1,6 +1,6 @@
 import ast
-import re
 import os
+import re
 
 from setuptools import setup
 
@@ -21,14 +21,21 @@ setup(
     zip_safe=False,
     python_requires='>=3.4',
     install_requires=[
-        'click',
-        'gensim',
+        'click==7.0',
+        'gensim==3.6.0',
     ],
     extras_require={
-        'dev': [
-            'pytest>=3',
+        'test': [
             'coverage',
+            'pytest>=3',
             'tox',
+        ],
+        'dev': [
+            'flake8',
+            'isort',
+            'mypy',
+            'pyformat',
+            'yapf',
         ],
     },
     entry_points='''

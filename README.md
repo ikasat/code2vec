@@ -1,6 +1,6 @@
 # code2vec
 
-## Install
+## Installation
 
 ```sh
 git clone --depth 1 https://github.com/ikasat/code2vec.git
@@ -18,15 +18,16 @@ See also: https://github.com/ikasat/jmethdeps
 
 ```sh
 cd <working directory>/
-find /path/to/libs -name '*.jar' | xargs -r jmethdeps -j -d | gzip -c >dependency.json.gz
-zcat dependency.json.gz | code2vec document split | gzip -c >documents.json.gz
-zcat documents.json.gz | code2vec word2vec train
+find /path/to/libs -name '*.jar' | xargs -r jmethdeps -j -d | gzip -c >dependency.jsons.gz
+zcat dependency.jsons.gz | code2vec document split | gzip -c >documents.jsons.gz
+zcat documents.jsons.gz | code2vec embed train -m word2vec -f embed.model -e 30
 ```
 
 ### Prediction
 
 ```
-$ code2vec word2vec predict -- add -list map
+$ code2vec embed predict -m word2vec -f embed.model
+> add - list + map
 0.5713 put
 0.5061 contains
 0.4275 hash
@@ -37,4 +38,5 @@ $ code2vec word2vec predict -- add -list map
 0.3674 concurrent
 0.3600 filtered
 0.3562 entry
+>
 ```
